@@ -1,1 +1,3 @@
 # post-service
+
+*Using SNS
