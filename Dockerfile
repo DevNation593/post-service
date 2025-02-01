@@ -1,18 +1,17 @@
-# Use Node.js base image
-FROM node:18-alpine
-
-# Set the working directory
+FROM node:20-alpine
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copiar los archivos necesarios
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --only=production
 
-# Copy the entire project
-COPY . .
+# Copiar cada servicio
+COPY newpost /app/newpost
+COPY getpost /app/getpost
+COPY deletepost /app/deletepost
+COPY shared /app/shared
 
-# Expose the application port
-EXPOSE 5000
+# Exponer los puertos de los microservicios
+EXPOSE 3000 3001 3002
 
-# Start the application
-CMD ["node", "src/app.js"]
+CMD ["docker-compose", "up"]

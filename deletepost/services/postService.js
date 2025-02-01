@@ -1,14 +1,16 @@
-const AWS = require('../config/awsConfig');
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const { TableName } = require('../models/postModel');
+const { dynamoDB } = require("../config/awsConfig");
+const { DeleteItemCommand } = require("@aws-sdk/client-dynamodb");
+
+const TABLE_NAME = "Posts";
 
 const deletePost = async (postId) => {
     const params = {
-        TableName,
-        Key: { postId },
+        TableName: TABLE_NAME,
+        Key: { postId: { S: postId } },
     };
-    await dynamoDB.delete(params).promise();
-    return { message: 'Post deleted successfully' };
+    const command = new DeleteItemCommand(params);
+    await dynamoDB.send(command);
+    return { message: "Post eliminado correctamente" };
 };
 
 module.exports = { deletePost };

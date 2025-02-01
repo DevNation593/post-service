@@ -1,22 +1,22 @@
-const AWS = require('../config/awsConfig');
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const { TableName } = require('../models/postModel');
+const { dynamoDB } = require("../config/awsConfig");
+const { GetItemCommand, ScanCommand } = require("@aws-sdk/client-dynamodb");
 
-const getPosts = async () => {
-    const params = {
-        TableName,
-    };
-    const data = await dynamoDB.scan(params).promise();
-    return data.Items;
-};
+const TABLE_NAME = "Posts";
 
 const getPostById = async (postId) => {
     const params = {
-        TableName,
-        Key: { postId },
+        TableName: TABLE_NAME,
+        Key: { postId: { S: postId } },
     };
-    const data = await dynamoDB.get(params).promise();
-    return data.Item;
+    const command = new GetItemCommand(params);
+    const response = await dynamoDB.send(command);
+    return response.Item ? response.Item : null;
 };
 
-module.exports = { getPosts, getPostById };
+const getAllPosts = async () => {
+    const command = new ScanCommand({ TableName: TABLE_NAME });
+    const response = await dynamoDB.send(command);
+    return response.Items;
+};
+
+module.exports = { getPostById, getAllPosts };
