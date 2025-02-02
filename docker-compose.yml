@@ -1,32 +1,41 @@
 version: '3.8'
 
 services:
-  newpost:
-    build: ./newpost
+  sendmessage:
+    build: ./sendmessage
     ports:
-      - "3000:3000"
+      - "3003:3003"
+    depends_on:
+      - dynamodb_local
     environment:
       - AWS_REGION=${AWS_REGION}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DYNAMODB_TABLE=${AWS_DYNAMODB_TABLE}
 
-  getpost:
-    build: ./getpost
+  getmessages:
+    build: ./getmessages
     ports:
-      - "3001:3001"
+      - "3004:3004"
+    depends_on:
+      - dynamodb_local
     environment:
       - AWS_REGION=${AWS_REGION}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DYNAMODB_TABLE=${AWS_DYNAMODB_TABLE}
 
-  deletepost:
-    build: ./deletepost
+  deletemessage:
+    build: ./deletemessage
     ports:
-      - "3002:3002"
+      - "3005:3005"
+    depends_on:
+      - dynamodb_local
     environment:
       - AWS_REGION=${AWS_REGION}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DYNAMODB_TABLE=${AWS_DYNAMODB_TABLE}
 
   dynamodb_local:
     image: amazon/dynamodb-local
