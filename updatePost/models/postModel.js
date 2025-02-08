@@ -7,3 +7,4 @@ module.exports = class Post {
       this.timestamp = timestamp;
     }
   };
+  

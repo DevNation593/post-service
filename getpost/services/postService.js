@@ -1,22 +1,27 @@
+const AWS = require("aws-sdk");
 const { dynamoDB } = require("../config/awsConfig");
-const { GetItemCommand, ScanCommand } = require("@aws-sdk/client-dynamodb");
-
-const TABLE_NAME = "Posts";
-
-const getPostById = async (postId) => {
-    const params = {
-        TableName: TABLE_NAME,
-        Key: { postId: { S: postId } },
-    };
-    const command = new GetItemCommand(params);
-    const response = await dynamoDB.send(command);
-    return response.Item ? response.Item : null;
+const redisClient = require("../config/redisConfig");
+AWS.config.update({ region: dynamoDB.region });
+const docClient = new AWS.DynamoDB.DocumentClient();
+module.exports.getPost = async (postId) => {
+  return new Promise((resolve, reject) => {
+    redisClient.get(postId, async (err, cachedPost) => {
+      if (cachedPost) {
+        return resolve(JSON.parse(cachedPost));
+      }
+      
+      try {
+        const params = {
+          TableName: dynamoDB.tableName,
+          Key: { id: postId }
+        };
+        const post = await docClient.get(params).promise();
+        if (!post.Item) throw new Error("Post not found");
+        redisClient.setex(postId, 3600, JSON.stringify(post.Item));
+        resolve(post.Item);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  });
 };
-
-const getAllPosts = async () => {
-    const command = new ScanCommand({ TableName: TABLE_NAME });
-    const response = await dynamoDB.send(command);
-    return response.Items;
-};
-
-module.exports = { getPostById, getAllPosts };

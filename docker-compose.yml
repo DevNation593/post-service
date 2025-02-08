@@ -1,43 +1,69 @@
 version: '3.8'
 
 services:
-  sendmessage:
-    build: ./sendmessage
+  createpost:
+    build: ./createPost
     ports:
-      - "3003:3003"
+      - "3001:3000"
+    env_file:
+      - .env
     depends_on:
-      - dynamodb_local
-    environment:
-      - AWS_REGION=${AWS_REGION}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DYNAMODB_TABLE=${AWS_DYNAMODB_TABLE}
+      - dynamodb
+      - redis
+    networks:
+      - app_network
 
-  getmessages:
-    build: ./getmessages
+  deletepost:
+    build: ./deletePost
     ports:
-      - "3004:3004"
+      - "3002:3000"
+    env_file:
+      - .env
     depends_on:
-      - dynamodb_local
-    environment:
-      - AWS_REGION=${AWS_REGION}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DYNAMODB_TABLE=${AWS_DYNAMODB_TABLE}
+      - dynamodb
+      - redis
+    networks:
+      - app_network
 
-  deletemessage:
-    build: ./deletemessage
+  getpost:
+    build: ./getPost
     ports:
-      - "3005:3005"
+      - "3003:3000"
+    env_file:
+      - .env
     depends_on:
-      - dynamodb_local
-    environment:
-      - AWS_REGION=${AWS_REGION}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DYNAMODB_TABLE=${AWS_DYNAMODB_TABLE}
+      - dynamodb
+      - redis
+    networks:
+      - app_network
 
-  dynamodb_local:
+  updatepost:
+    build: ./updatePost
+    ports:
+      - "3004:3000"
+    env_file:
+      - .env
+    depends_on:
+      - dynamodb
+      - redis
+    networks:
+      - app_network
+
+  dynamodb:
     image: amazon/dynamodb-local
     ports:
       - "8000:8000"
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb"]
+    networks:
+      - app_network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
