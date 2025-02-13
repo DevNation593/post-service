@@ -1,15 +1,12 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const postRoutes = require('./routes/postRoutes');
-const { setupWebSocket } = require('./sockets/websocket');
+const express = require("express");
 const app = express();
-const server = require('http').createServer(app);
-setupWebSocket(server);
+const getRoutes = require("./routes/postRoutes");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger");
 
-app.use(bodyParser.json());
-app.use('/posts', postRoutes);
+app.use(express.json());
+app.use("/api", getRoutes);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-    console.log(`getpost service running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`GetPost service running on port ${PORT}`));

@@ -1,22 +1,13 @@
-const AWS = require('../config/awsConfig');
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const { TableName } = require('../models/postModel');
+const { dynamoDB } = require("../config/awsConfig");
 
-const getPosts = async () => {
-    const params = {
-        TableName,
-    };
-    const data = await dynamoDB.scan(params).promise();
-    return data.Items;
+module.exports.getPosts = async () => {
+  const tableName = process.env.DYNAMODB_TABLE || "PostsTable";
+
+  try {
+    const result = await dynamoDB.client.scan({ TableName: tableName }).promise();
+    return result.Items || [];
+  } catch (error) {
+    console.error("Error retrieving posts:", error);
+    throw new Error("Internal server error");
+  }
 };
-
-const getPostById = async (postId) => {
-    const params = {
-        TableName,
-        Key: { postId },
-    };
-    const data = await dynamoDB.get(params).promise();
-    return data.Item;
-};
-
-module.exports = { getPosts, getPostById };
