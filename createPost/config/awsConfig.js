@@ -1,11 +1,10 @@
-require("dotenv").config();
+const AWS = require("aws-sdk");
 
-module.exports = {
-  dynamoDB: {
-    region: process.env.AWS_REGION,
-    tableName: process.env.DYNAMODB_TABLE
-  },
-  s3: {
-    bucketName: process.env.S3_BUCKET
-  }
-};
+AWS.config.update({
+  region: process.env.AWS_REGION || "us-east-1",
+});
+
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const s3 = new AWS.S3();
+
+module.exports = { dynamoDB, s3 };

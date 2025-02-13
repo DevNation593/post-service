@@ -1,69 +1,46 @@
-version: '3.8'
+version: "3.8"
 
 services:
   createpost:
-    build: ./createPost
+    image: "${DOCKERHUB_USERNAME}/test-message:createpost-latest"
     ports:
-      - "3001:3000"
-    env_file:
-      - .env
-    depends_on:
-      - dynamodb
-      - redis
-    networks:
-      - app_network
-
-  deletepost:
-    build: ./deletePost
-    ports:
-      - "3002:3000"
-    env_file:
-      - .env
-    depends_on:
-      - dynamodb
-      - redis
-    networks:
-      - app_network
+      - "3040:3040"  
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_REGION: "${AWS_REGION}"
+      DYNAMODB_TABLE: "${DYNAMODB_TABLE}"
+      S3_BUCKET: "${S3_BUCKET}"
 
   getpost:
-    build: ./getPost
+    image: "${DOCKERHUB_USERNAME}/test-message:getpost-latest"
     ports:
-      - "3003:3000"
-    env_file:
-      - .env
-    depends_on:
-      - dynamodb
-      - redis
-    networks:
-      - app_network
+      - "3041:3040"  
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_REGION: "${AWS_REGION}"
+      DYNAMODB_TABLE: "${DYNAMODB_TABLE}"
+      S3_BUCKET: "${S3_BUCKET}"
 
   updatepost:
-    build: ./updatePost
+    image: "${DOCKERHUB_USERNAME}/test-message:updatepost-latest"
     ports:
-      - "3004:3000"
-    env_file:
-      - .env
-    depends_on:
-      - dynamodb
-      - redis
-    networks:
-      - app_network
+      - "3042:3040"  
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_REGION: "${AWS_REGION}"
+      DYNAMODB_TABLE: "${DYNAMODB_TABLE}"
+      S3_BUCKET: "${S3_BUCKET}"
 
-  dynamodb:
-    image: amazon/dynamodb-local
+  deletepost:
+    image: "${DOCKERHUB_USERNAME}/test-message:deletepost-latest"
     ports:
-      - "8000:8000"
-    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb"]
-    networks:
-      - app_network
-
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    networks:
-      - app_network
-
-networks:
-  app_network:
-    driver: bridge
+      - "3043:3040"  
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_REGION: "${AWS_REGION}"
+      DYNAMODB_TABLE: "${DYNAMODB_TABLE}"
+      S3_BUCKET: "${S3_BUCKET}"
