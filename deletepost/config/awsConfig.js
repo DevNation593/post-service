@@ -1,10 +1,13 @@
-module.exports = {
-    dynamoDB: {
-      region: "us-east-1",
-      tableName: "PostsTable"
-    },
-    s3: {
-      bucketName: "your-s3-bucket"
-    }
-  };
-  
+const AWS = require("aws-sdk");
+
+const dynamoDB = {
+  client: new AWS.DynamoDB.DocumentClient(),
+  tableName: process.env.DYNAMODB_TABLE || "PostsTable",
+};
+
+const s3 = {
+  client: new AWS.S3(),
+  bucketName: process.env.S3_BUCKET || "distribuidabucketsocial",
+};
+
+module.exports = { dynamoDB, s3 };
